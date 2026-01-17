@@ -4,12 +4,67 @@ Express.js REST API dengan PostgreSQL dan JWT Authentication.
 
 ## Prerequisites
 
+**Opsi 1: Docker (Recommended)**
+- Docker dan Docker Compose
+
+**Opsi 2: Local**
 - Node.js (v16 atau lebih baru)
 - PostgreSQL (v12 atau lebih baru)
 
-## Instalasi
+---
 
-### 1. Clone dan Install Dependencies
+## Quick Start dengan Docker
+
+Cara tercepat untuk menjalankan project:
+
+```bash
+# 1. Copy environment file
+cp .env.example .env
+
+# 2. Jalankan dengan Docker Compose
+docker compose up -d
+
+# 3. Jalankan migrasi dan seeder
+docker compose exec app npm run db:migrate
+docker compose exec app npm run db:seed
+```
+
+Server berjalan di `http://localhost:3000`
+
+### Development dengan Hot Reload
+
+Untuk development dengan auto-reload saat file berubah:
+
+```bash
+# Jalankan PostgreSQL dan app-dev
+docker compose --profile dev up -d postgres app-dev
+
+# Jalankan migrasi
+docker compose exec app-dev npm run db:migrate
+docker compose exec app-dev npm run db:seed
+```
+
+### Docker Commands
+
+```bash
+# Lihat logs
+docker compose logs -f app
+
+# Stop semua services
+docker compose down
+
+# Reset database (hapus volume)
+docker compose down -v
+
+# Rebuild image setelah update dependencies
+docker compose build --no-cache
+```
+
+---
+
+## Instalasi Manual (Tanpa Docker)
+
+### 1. Install Dependencies
 
 ```bash
 cd backend-app
@@ -18,31 +73,22 @@ npm install
 
 ### 2. Konfigurasi Environment
 
-Copy file `.env.example` ke `.env`:
-
 ```bash
 cp .env.example .env
 ```
 
-Edit file `.env` dan sesuaikan dengan konfigurasi Anda:
+Edit `.env`:
 
 ```env
-# Server
 PORT=3000
 NODE_ENV=development
-
-# Database
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=backend_app
 DB_USER=postgres
 DB_PASSWORD=password_postgresql_anda
-
-# JWT (generate secret yang unik)
 JWT_SECRET=your_generated_secret_key
 JWT_EXPIRES_IN=15m
-
-# CORS
 CORS_ORIGIN=http://localhost:3000
 ```
 
@@ -54,16 +100,9 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 ### 3. Setup Database
 
-Pastikan PostgreSQL sudah berjalan, kemudian:
-
 ```bash
-# Buat database
 npm run db:create
-
-# Jalankan migrasi
 npm run db:migrate
-
-# Isi data awal (seeder)
 npm run db:seed
 ```
 
@@ -77,7 +116,7 @@ npm run dev
 npm start
 ```
 
-Server akan berjalan di `http://localhost:3000`
+Server berjalan di `http://localhost:3000`
 
 ## Security Features
 
@@ -245,6 +284,20 @@ curl -X POST http://localhost:3000/api/posts \
 ```
 
 ## Database Commands
+
+### Dengan Docker
+
+```bash
+docker compose exec app npm run db:migrate          # Jalankan migrasi
+docker compose exec app npm run db:migrate:undo     # Undo migrasi terakhir
+docker compose exec app npm run db:seed             # Jalankan semua seeder
+docker compose exec app npm run db:reset            # Reset database
+
+# Akses PostgreSQL CLI
+docker compose exec postgres psql -U postgres -d backend_app
+```
+
+### Tanpa Docker
 
 ```bash
 npm run db:create           # Buat database
