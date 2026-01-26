@@ -13,51 +13,45 @@ Express.js REST API dengan PostgreSQL dan JWT Authentication.
 
 ---
 
-## Quick Start dengan Docker
+## Quick Start dengan Docker (Recommended)
 
-Cara tercepat untuk menjalankan project:
+Ini adalah cara yang direkomendasikan untuk menjalankan project untuk development.
 
 ```bash
-# 1. Copy environment file
+# 1. Salin file environment
 cp .env.example .env
 
-# 2. Jalankan dengan Docker Compose
-docker compose up -d
+# 2. Jalankan service dengan Docker Compose
+# Perintah ini akan membangun image dan menjalankan container
+# 'app-dev' (Node.js) dan 'postgres' (database).
+docker-compose up --build -d app-dev
 
-# 3. Jalankan migrasi dan seeder
-docker compose exec app npm run db:migrate
-docker compose exec app npm run db:seed
+# 3. Jalankan migrasi database
+# Perintah ini akan membuat semua tabel yang dibutuhkan.
+docker-compose exec app-dev npm run db:migrate
+
+# 4. Jalankan database seeder
+# Perintah ini akan mengisi database dengan data awal (contoh: user admin).
+docker-compose exec app-dev npm run db:seed
 ```
 
-Server berjalan di `http://localhost:3000`
+Server akan berjalan di `http://localhost:3000`. Layanan `app-dev` dikonfigurasi dengan *hot-reload*, jadi setiap perubahan pada file akan secara otomatis me-restart server.
 
-### Development dengan Hot Reload
-
-Untuk development dengan auto-reload saat file berubah:
+### Perintah Docker Compose Lainnya
 
 ```bash
-# Jalankan PostgreSQL dan app-dev
-docker compose --profile dev up -d postgres app-dev
+# Melihat log dari aplikasi secara real-time
+docker-compose logs -f app-dev
 
-# Jalankan migrasi
-docker compose exec app-dev npm run db:migrate
-docker compose exec app-dev npm run db:seed
-```
+# Menghentikan semua service
+docker-compose down
 
-### Docker Commands
+# Menghentikan semua service dan menghapus volume database
+# (PERHATIAN: Ini akan menghapus semua data di database Anda)
+docker-compose down -v
 
-```bash
-# Lihat logs
-docker compose logs -f app
-
-# Stop semua services
-docker compose down
-
-# Reset database (hapus volume)
-docker compose down -v
-
-# Rebuild image setelah update dependencies
-docker compose build --no-cache
+# Akses CLI PostgreSQL di dalam container
+docker-compose exec postgres psql -U postgres -d backend_app
 ```
 
 ---
@@ -288,13 +282,13 @@ curl -X POST http://localhost:3000/api/posts \
 ### Dengan Docker
 
 ```bash
-docker compose exec app npm run db:migrate          # Jalankan migrasi
-docker compose exec app npm run db:migrate:undo     # Undo migrasi terakhir
-docker compose exec app npm run db:seed             # Jalankan semua seeder
-docker compose exec app npm run db:reset            # Reset database
+docker-compose exec app-dev npm run db:migrate          # Jalankan migrasi
+docker-compose exec app-dev npm run db:migrate:undo     # Undo migrasi terakhir
+docker-compose exec app-dev npm run db:seed             # Jalankan semua seeder
+docker-compose exec app-dev npm run db:reset            # Reset database
 
 # Akses PostgreSQL CLI
-docker compose exec postgres psql -U postgres -d backend_app
+docker-compose exec postgres psql -U postgres -d backend_app
 ```
 
 ### Tanpa Docker

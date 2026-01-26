@@ -10,7 +10,7 @@ schema
   .has().digits(1)                                // Must have at least 1 digit
   .has().symbols(1)                               // Must have at least 1 symbol
   .has().not().spaces()                           // Should not have spaces
-  .is().not().oneOf(['Password123!', 'Qwerty123!', 'Admin123!']); // Blacklist common passwords
+  .is().not().oneOf(['Admin123!', 'Qwerty123!', 'Admin123!']); // Blacklist common passwords
 
 const validatePassword = (password) => {
   const result = schema.validate(password, { details: true });
